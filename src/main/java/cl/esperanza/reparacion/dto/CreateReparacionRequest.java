@@ -1,13 +1,17 @@
 package cl.esperanza.reparacion.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.NotNull;
-import cl.esperanza.reparacion.model.Reparacion;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import cl.esperanza.reparacion.model.Reparacion;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+
 public record CreateReparacionRequest(
+    @NotNull(message = "El ID de la incidencia es obligatorio")
+    Integer idIncidencia,
+
     @NotBlank(message = "El nombre del operador es obligatorio")
     String nombreOperador,
 
@@ -25,6 +29,8 @@ public record CreateReparacionRequest(
 ) {
     public Reparacion toEntity() {
         Reparacion reparacion = new Reparacion();
+
+        reparacion.setIdIncidencia(this.idIncidencia());
         reparacion.setNombreOperador(this.nombreOperador());
         reparacion.setDescripcion(this.descripcion());
         reparacion.setCantidadUtilizada(this.cantidadUtilizada());
