@@ -51,8 +51,8 @@ public class ReparacionController {
         UpdateEstadoIncidenciaRequest updateRequest = new UpdateEstadoIncidenciaRequest(true);
 
         try {
-            incidenciasWebClient.put()
-                .uri("/{id}", request.idIncidencia()) // Le pasa el ID a la URL: /api/v1/incidencias/5
+            incidenciasWebClient.patch()
+                .uri("/{id}/estado", request.idIncidencia()) // Le pasa el ID a la URL: /api/v1/incidencias/5
                 .bodyValue(updateRequest) // Envía el JSON con el estado "RESUELTA"
                 .retrieve()
                 .bodyToMono(Void.class) // Usamos Void porque no nos interesa leer el body de respuesta
