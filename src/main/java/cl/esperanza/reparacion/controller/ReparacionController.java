@@ -1,18 +1,23 @@
 package cl.esperanza.reparacion.controller;
 
-import jakarta.validation.Valid;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.List;
-import cl.esperanza.reparacion.model.Inventario;
-import cl.esperanza.reparacion.model.Reparacion;
-import cl.esperanza.reparacion.service.ReparacionService;
 import cl.esperanza.reparacion.dto.CreateInventarioRequest;
 import cl.esperanza.reparacion.dto.CreateReparacionRequest;
 import cl.esperanza.reparacion.dto.UpdateEstadoIncidenciaRequest;
+import cl.esperanza.reparacion.model.Inventario;
+import cl.esperanza.reparacion.model.Reparacion;
+import cl.esperanza.reparacion.service.ReparacionService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/reparacion")
@@ -43,7 +48,7 @@ public class ReparacionController {
         Reparacion reparacionEntity = request.toEntity();
         Reparacion nuevaReparacion = reparacionService.registrarReparacion(reparacionEntity, request.idMaterial());
         
-        UpdateEstadoIncidenciaRequest updateRequest = new UpdateEstadoIncidenciaRequest("RESUELTA");
+        UpdateEstadoIncidenciaRequest updateRequest = new UpdateEstadoIncidenciaRequest(true);
 
         try {
             incidenciasWebClient.put()
@@ -53,7 +58,7 @@ public class ReparacionController {
                 .bodyToMono(Void.class) // Usamos Void porque no nos interesa leer el body de respuesta
                 .block(); // .block() hace que sea síncrono, tal como el .block() de tu profesor
                 
-            System.out.println("Se actualizó la incidencia " + request.idIncidencia() + " en el otro microservicio.");
+            System.out.println("Se actualizó la incidencia " + request.idIncidencia() + " a estadoReparacion=true");
         } catch (Exception e) {
             System.err.println("Error al conectar con la API de Incidencias: " + e.getMessage());
         }
