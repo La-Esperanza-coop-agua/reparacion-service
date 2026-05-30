@@ -5,7 +5,6 @@ import cl.esperanza.reparacion.model.Inventario;
 import cl.esperanza.reparacion.model.Reparacion;
 import cl.esperanza.reparacion.repository.InventarioRepository;
 import cl.esperanza.reparacion.repository.ReparacionRepository;
-
 import java.util.List;
 
 @Service
@@ -27,7 +26,7 @@ public class ReparacionService {
         Inventario material = inventarioRepo.findById(idMaterial).orElse(null);
 
         if (material == null) {
-            throw new RuntimeException("Error: No se encontró el material en la bodega con ID " + idMaterial);
+            throw new RuntimeException("Error: No se encontró el material con ID " + idMaterial);
         }
 
         if (material.getCantidadDisponible() < reparacion.getCantidadUtilizada()) {
@@ -37,6 +36,7 @@ public class ReparacionService {
         int nuevoStock = material.getCantidadDisponible() - reparacion.getCantidadUtilizada();
         material.setCantidadDisponible(nuevoStock);
         inventarioRepo.save(material);
+        
         int costoMateriales = reparacion.getCantidadUtilizada() * material.getPrecioUnitario();
         int total = costoMateriales + reparacion.getCostoManoObra();
 
@@ -52,5 +52,9 @@ public class ReparacionService {
 
     public List<Reparacion> verHistorialReparaciones() {
         return reparacionRepo.findAll();
+    }
+
+    public double obtenerTotalCostos() {
+        return reparacionRepo.sumTotalCostosReparaciones();
     }
 }

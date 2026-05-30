@@ -1,23 +1,15 @@
 package cl.esperanza.reparacion.controller;
 
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import cl.esperanza.reparacion.dto.CreateInventarioRequest;
-import cl.esperanza.reparacion.dto.CreateReparacionRequest;
-import cl.esperanza.reparacion.dto.UpdateEstadoIncidenciaRequest;
-import cl.esperanza.reparacion.model.Inventario;
-import cl.esperanza.reparacion.model.Reparacion;
+import cl.esperanza.reparacion.dto.*;
+import cl.esperanza.reparacion.model.*;
 import cl.esperanza.reparacion.service.ReparacionService;
 import jakarta.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/reparacion")
@@ -26,15 +18,15 @@ public class ReparacionController {
     private final ReparacionService reparacionService;
     private final WebClient incidenciasWebClient;
 
-    public ReparacionController(ReparacionService reparacionService, WebClient incidenciasWebClient) {
+    public ReparacionController(ReparacionService reparacionService, 
+                                @Qualifier("incidenciasWebClient") WebClient incidenciasWebClient) {
         this.reparacionService = reparacionService;
-        this.incidenciasWebClient = incidenciasWebClient; // Inyeccion del webclient de incidencias
+        this.incidenciasWebClient = incidenciasWebClient;
     }
 
     @PostMapping("/inventario")
     public ResponseEntity<Inventario> agregarMaterial(@Valid @RequestBody CreateInventarioRequest request) {
-        Inventario nuevoMaterial = reparacionService.registrarMaterial(request.toEntity());
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoMaterial);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reparacionService.registrarMaterial(request.toEntity()));
     }
 
     @GetMapping("/inventario")
@@ -42,25 +34,19 @@ public class ReparacionController {
         return ResponseEntity.ok(reparacionService.verInventario());
     }
 
-
     @PostMapping("/registrar")
     public ResponseEntity<Reparacion> registrarReparacion(@Valid @RequestBody CreateReparacionRequest request) {
-        Reparacion reparacionEntity = request.toEntity();
-        Reparacion nuevaReparacion = reparacionService.registrarReparacion(reparacionEntity, request.idMaterial());
+        Reparacion nuevaReparacion = reparacionService.registrarReparacion(request.toEntity(), request.idMaterial());
         
-        UpdateEstadoIncidenciaRequest updateRequest = new UpdateEstadoIncidenciaRequest(true);
-
         try {
             incidenciasWebClient.patch()
-                .uri("/{id}/estado", request.idIncidencia()) // Le pasa el ID a la URL: /api/v1/incidencias/5
-                .bodyValue(updateRequest) // Envía el JSON con el estado "RESUELTA"
+                .uri("/{id}/estado", request.idIncidencia())
+                .bodyValue(new UpdateEstadoIncidenciaRequest(true))
                 .retrieve()
-                .bodyToMono(Void.class) // Usamos Void porque no nos interesa leer el body de respuesta
-                .block(); // .block() hace que sea síncrono, tal como el .block() de tu profesor
-                
-            System.out.println("Se actualizó la incidencia " + request.idIncidencia() + " a estadoReparacion=true");
+                .bodyToMono(Void.class)
+                .block();
         } catch (Exception e) {
-            System.err.println("Error al conectar con la API de Incidencias: " + e.getMessage());
+            System.err.println("Error al conectar con Incidencias: " + e.getMessage());
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReparacion);
@@ -69,5 +55,10 @@ public class ReparacionController {
     @GetMapping("/historial")
     public ResponseEntity<List<Reparacion>> obtenerHistorialReparaciones() {
         return ResponseEntity.ok(reparacionService.verHistorialReparaciones());
+    }
+
+    @GetMapping("/total-costos")
+    public ResponseEntity<Double> getTotalCostos() {
+        return ResponseEntity.ok(reparacionService.obtenerTotalCostos());
     }
 }
