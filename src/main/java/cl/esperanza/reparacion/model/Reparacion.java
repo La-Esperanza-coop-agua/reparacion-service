@@ -1,11 +1,7 @@
 package cl.esperanza.reparacion.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.time.LocalDate;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,12 +15,12 @@ public class Reparacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    // Id al que va vinculada la reparacion
-    @Column(name = "id_incidencia",nullable = false)
+
+    @Column(name = "id_incidencia", nullable = false)
     private Integer idIncidencia;
 
     @Column(nullable = false)
-    private String fechaReparacion;
+    private LocalDate fechaReparacion;
 
     @Column(nullable = false)
     private String nombreOperador;
