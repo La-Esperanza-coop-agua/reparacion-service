@@ -1,9 +1,14 @@
 package cl.esperanza.reparacion.controller;
 
 import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import cl.esperanza.reparacion.dto.CreateInventarioRequest;
@@ -48,20 +53,11 @@ public class ReparacionController {
 
         try {
             incidenciasWebClient.patch()
-<<<<<<< HEAD
                 .uri("/{id}/estado", request.idIncidencia()) 
                 .bodyValue(updateRequest) 
                 .retrieve()
                 .bodyToMono(Void.class) 
                 .block(); 
-=======
-                .uri("/{id}/estado", request.idIncidencia())
-                .bodyValue(updateRequest)
-                .retrieve()
-                .bodyToMono(Void.class)
-                .block();
-                
->>>>>>> 52bf99765d90b498750eeda188801906930ac5a1
             System.out.println("Se actualizó la incidencia " + request.idIncidencia() + " a estadoReparacion=true");
         } catch (Exception e) {
             System.err.println("Error al conectar con la API de Incidencias: " + e.getMessage());
