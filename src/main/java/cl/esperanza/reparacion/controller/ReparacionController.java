@@ -28,7 +28,7 @@ public class ReparacionController {
 
     public ReparacionController(ReparacionService reparacionService, WebClient incidenciasWebClient) {
         this.reparacionService = reparacionService;
-        this.incidenciasWebClient = incidenciasWebClient; // Inyeccion del webclient de incidencias
+        this.incidenciasWebClient = incidenciasWebClient; 
     }
 
     @PostMapping("/inventario")
@@ -52,12 +52,11 @@ public class ReparacionController {
 
         try {
             incidenciasWebClient.patch()
-                .uri("/{id}/estado", request.idIncidencia()) // Le pasa el ID a la URL: /api/v1/incidencias/5
-                .bodyValue(updateRequest) // Envía el JSON con el estado "RESUELTA"
+                .uri("/{id}/estado", request.idIncidencia()) 
+                .bodyValue(updateRequest) 
                 .retrieve()
-                .bodyToMono(Void.class) // Usamos Void porque no nos interesa leer el body de respuesta
-                .block(); // .block() hace que sea síncrono, tal como el .block() de tu profesor
-                
+                .bodyToMono(Void.class) 
+                .block(); 
             System.out.println("Se actualizó la incidencia " + request.idIncidencia() + " a estadoReparacion=true");
         } catch (Exception e) {
             System.err.println("Error al conectar con la API de Incidencias: " + e.getMessage());

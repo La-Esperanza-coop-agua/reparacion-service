@@ -1,23 +1,25 @@
 package cl.esperanza.reparacion.service;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import cl.esperanza.reparacion.model.Inventario;
 import cl.esperanza.reparacion.model.Reparacion;
 import cl.esperanza.reparacion.repository.InventarioRepository;
 import cl.esperanza.reparacion.repository.ReparacionRepository;
-
-import java.util.List;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional
 public class ReparacionService {
 
-    private final ReparacionRepository reparacionRepo;
-    private final InventarioRepository inventarioRepo;
+    @Autowired
+    private ReparacionRepository reparacionRepo;
 
-    public ReparacionService(ReparacionRepository reparacionRepo, InventarioRepository inventarioRepo) {
-        this.reparacionRepo = reparacionRepo;
-        this.inventarioRepo = inventarioRepo;
-    }
+    @Autowired
+    private InventarioRepository inventarioRepo;
 
     public Inventario registrarMaterial(Inventario inventario) {
         return inventarioRepo.save(inventario);
