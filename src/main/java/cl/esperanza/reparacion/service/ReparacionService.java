@@ -39,6 +39,7 @@ public class ReparacionService {
         int nuevoStock = material.getCantidadDisponible() - reparacion.getCantidadUtilizada();
         material.setCantidadDisponible(nuevoStock);
         inventarioRepo.save(material);
+        
         int costoMateriales = reparacion.getCantidadUtilizada() * material.getPrecioUnitario();
         int total = costoMateriales + reparacion.getCostoManoObra();
 
@@ -54,5 +55,26 @@ public class ReparacionService {
 
     public List<Reparacion> verHistorialReparaciones() {
         return reparacionRepo.findAll();
+    }
+
+    public Double obtenerTotalCostos() {
+        List<Reparacion> reparaciones = reparacionRepo.findAll();
+        double sumaCostos = 0.0;
+        
+        for (Reparacion rep : reparaciones) {
+            sumaCostos = sumaCostos + rep.getCostoTotal();
+        }
+        
+        return sumaCostos;
+    }
+
+    public Long contarReparacionesPendientes() {
+        List<Reparacion> reparaciones = reparacionRepo.findAll();
+        long cantidadPendientes = 0;
+        
+        for (Reparacion rep : reparaciones) {
+            cantidadPendientes = cantidadPendientes + 1;
+        }
+        return cantidadPendientes;
     }
 }
