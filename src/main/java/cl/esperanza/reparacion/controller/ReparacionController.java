@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/api/v1/reparaciones") // Ajustado a plural para hacer match con el WebClient de Reportes
+@RequestMapping("/api/v1/reparaciones")
 @Tag(name = "Reparaciones e Inventario", description = "Gestión de los materiales y el registro de reparaciones en terreno.")
 public class ReparacionController {
 
